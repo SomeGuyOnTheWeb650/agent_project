@@ -1,6 +1,7 @@
 import os, argparse
 from dotenv import load_dotenv
 from google.genai import types
+from prompts import system_prompt
 
 parser = argparse.ArgumentParser(description="Chatbot")
 parser.add_argument("user_prompt", type=str, help="User prompt")
@@ -17,7 +18,10 @@ if api_key == None:
 from google import genai
 client = genai.Client(api_key=api_key)
 response = client.models.generate_content(
-    model= "gemini-2.5-flash", contents= messages)
+    model= "gemini-2.5-flash", 
+    contents= messages, 
+    config=types.GenerateContentConfig(system_instruction=system_prompt),
+)
 if response.usage_metadata == None:
     raise RuntimeError("prompt didn't run correctly")
 if args.verbose:
