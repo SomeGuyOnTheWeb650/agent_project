@@ -17,8 +17,9 @@ def write_file(working_directory, file_path, content):
         parent = os.path.dirname(norm)
         os.makedirs(parent, exist_ok=True)
         
-        opened = open(norm, "w")
-        opened = content
+        with open(norm, "w") as f:
+            f.write(content)
+        
     except Exception:
         return "Something wacky"
     return f"Successfully wrote to '{norm}' ({len(content)} characters written)"
@@ -33,11 +34,11 @@ schema_write_file = types.FunctionDeclaration(
                 type=types.Type.STRING,
                 description="A string with the location of a particular file",
             ),
-            "contents": types.Schema(
+            "content": types.Schema(
                 type=types.Type.STRING,
                 description="A string containing the message that will overwrite the current contents of file_path"
             )
         },
-        required=["file_path", "contents"]
+        required=["file_path", "content"]
     ),
 )

@@ -26,17 +26,27 @@ response = client.models.generate_content(
 )
 if response.usage_metadata == None:
     raise RuntimeError("prompt didn't run correctly")
-if args.verbose:
-
-    print(f"User prompt: {args.user_prompt}\nPrompt tokens: {response.usage_metadata.prompt_token_count}\nResponse tokens: {response.usage_metadata.candidates_token_count}")
-
+print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
+print(f"Response token: {response.usage_metadata.candidates_token_count}")
 
 func_objects = response.function_calls
-
+func_results = []
 if len(func_objects) > 0:
 
     for ob in func_objects:
-        print(f"Calling function: {ob.name}({ob.args})")
+        function_call_result = call_function(ob, args.verbose)
+        if len(function_call_result.parts) == 0:
+            raise Exception("Error: Empty parts list")
+        if function_call_result.parts[0].function_response == None:
+            raise Exception("Error: .part.functionresponse == None")
+        if function_call_result.parts[0].function_response.response == None:
+            raise Exception("Error: function_call_result.parts[0].function_response == None")
+        func_results.append(function_call_result.parts[0]) 
+        if args.verbose:
+            print(f"-> {function_call_result.parts[0].function_response.response}")
+        
+
+
 else:
     print(response.text)
 
