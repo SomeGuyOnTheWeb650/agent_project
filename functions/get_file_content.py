@@ -1,5 +1,6 @@
 import os
 import config
+from google.genai import types
 
 def get_file_content(working_directory, file_path):
     try:
@@ -25,4 +26,17 @@ def get_file_content(working_directory, file_path):
         return f"Error: something wacky happened"
         
     return contents
-    pass
+schema_get_file_content = types.FunctionDeclaration(
+    name="get_file_content",
+    description="returns a string, containing the contents of a particular file, if longer than 10000 characters, truncates at 10000 and adds a truncated message",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="File path relative to working directory",
+            ),
+        },
+        required=["file_path"]
+    ),
+)
